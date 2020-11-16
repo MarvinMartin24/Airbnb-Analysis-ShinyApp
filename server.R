@@ -1,7 +1,6 @@
 library(shiny)
 
-setwd("~/Desktop/ING5/Data Analytics/Airbnb Data Analysis - Instructions 1/")
-listings <- read.csv(file.path("./data_cleansed/global_listings.csv"))
+listings <- read.csv(file.path("./data/global_listings.csv"))
 
 server <- function(input, output) {
 
