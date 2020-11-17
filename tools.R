@@ -18,17 +18,29 @@ download_data <- function(df, countries, last_n_dates) {
     df_country <- df[df$country == country,]
     df_country <- df_country[order(as.Date(df_country$date, format="%Y/%m/%d")),]
     df_country <- top_n(group_by(df_country, city), last_n_dates)
-    urls <- df_country$url
-    urls_cal <- lapply(urls, function(url) str_replace(url, "listings.csv", "calendar.csv"))
-    dfs <- append(dfs, list(rbindlist(lapply(urls, function(url) fread(url)), fill=TRUE)))
-    dfs_cal <- append(dfs_cal, list(rbindlist(lapply(urls_cal, function(url) fread(url)), fill=TRUE)))
+
+    dfs <- append(dfs, list(rbindlist(lapply(1:nrow(df_country), function(i) {
+      row <- df_country[i,]
+      new_df <- fread(row$url)
+      new_df$country <- row$country
+      new_df$region <- row$region
+      new_df$city <- row$city
+      new_df$date <- row$date
+      return(new_df)
+    }), fill=TRUE)))
+    
+    dfs_cal <- append(dfs_cal, list(rbindlist(lapply(1:nrow(df_country), function(i) {
+      url <- df_country[i,]$url
+      new_df <- fread(str_replace(url, "listings.csv", "calendar.csv"))
+      return(new_df)
+    }), fill=TRUE)))
   }
   return(list(listings=dfs, calendars=dfs_cal))
 }
 
 # urls <- read.csv(file.path("./data/all_data_urls.csv"))
 # df <- extract_all_meta(urls)
-# dfs <- download_data(df, c("france", "the-netherlands"), 1)
+# dfs <- download_data(df, c("france", the-netherlands"), 1)
 
 # listings <- dfs$listings
 # calendars <- dfs$calendars
