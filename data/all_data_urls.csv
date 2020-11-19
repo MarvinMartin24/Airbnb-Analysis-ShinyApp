@@ -389,7 +389,6 @@ http://data.insideairbnb.com/germany/be/berlin/2015-12-05/data/listings.csv.gz
 http://data.insideairbnb.com/germany/be/berlin/2015-11-08/data/listings.csv.gz
 http://data.insideairbnb.com/germany/be/berlin/2015-10-03/data/listings.csv.gz
 http://data.insideairbnb.com/italy/emilia-romagna/bologna/2020-08-31/data/listings.csv.gz
-http://data.insideairbnb.com/italy/emilia-romagna/bologna/2020-07-20/data/listings.csv.gz
 http://data.insideairbnb.com/italy/emilia-romagna/bologna/2020-06-15/data/listings.csv.gz
 http://data.insideairbnb.com/italy/emilia-romagna/bologna/2020-05-16/data/listings.csv.gz
 http://data.insideairbnb.com/italy/emilia-romagna/bologna/2020-04-30/data/listings.csv.gz
@@ -847,7 +846,6 @@ http://data.insideairbnb.com/spain/pv/euskadi/2018-08-28/data/listings.csv.gz
 http://data.insideairbnb.com/spain/pv/euskadi/2018-07-31/data/listings.csv.gz
 http://data.insideairbnb.com/spain/pv/euskadi/2018-04-21/data/listings.csv.gz
 http://data.insideairbnb.com/italy/toscana/florence/2020-08-31/data/listings.csv.gz
-http://data.insideairbnb.com/italy/toscana/florence/2020-07-23/data/listings.csv.gz
 http://data.insideairbnb.com/italy/toscana/florence/2020-06-19/data/listings.csv.gz
 http://data.insideairbnb.com/italy/toscana/florence/2020-05-24/data/listings.csv.gz
 http://data.insideairbnb.com/italy/toscana/florence/2020-04-30/data/listings.csv.gz
@@ -919,7 +917,6 @@ http://data.insideairbnb.com/switzerland/geneva/geneva/2016-08-08/data/listings.
 http://data.insideairbnb.com/switzerland/geneva/geneva/2016-07-09/data/listings.csv.gz
 http://data.insideairbnb.com/switzerland/geneva/geneva/2016-06-06/data/listings.csv.gz
 http://data.insideairbnb.com/switzerland/geneva/geneva/2016-05-06/data/listings.csv.gz
-http://data.insideairbnb.com/belgium/vlg/ghent/2020-07-28/data/listings.csv.gz
 http://data.insideairbnb.com/belgium/vlg/ghent/2020-06-18/data/listings.csv.gz
 http://data.insideairbnb.com/belgium/vlg/ghent/2020-05-24/data/listings.csv.gz
 http://data.insideairbnb.com/belgium/vlg/ghent/2020-04-27/data/listings.csv.gz
@@ -1048,6 +1045,19 @@ http://data.insideairbnb.com/china/hk/hong-kong/2018-07-11/data/listings.csv.gz
 http://data.insideairbnb.com/china/hk/hong-kong/2018-05-15/data/listings.csv.gz
 http://data.insideairbnb.com/china/hk/hong-kong/2018-04-13/data/listings.csv.gz
 http://data.insideairbnb.com/china/hk/hong-kong/2016-08-07/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-08-26/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-06-26/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-05-27/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-04-22/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-03-20/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-02-28/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2020-01-23/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2019-12-23/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2019-11-23/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2019-10-24/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2019-09-27/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2019-06-14/data/listings.csv.gz
+http://data.insideairbnb.com/ireland/2019-05-12/data/listings.csv.gz
 http://data.insideairbnb.com/turkey/marmara/istanbul/2020-06-28/data/listings.csv.gz
 http://data.insideairbnb.com/turkey/marmara/istanbul/2020-05-19/data/listings.csv.gz
 http://data.insideairbnb.com/turkey/marmara/istanbul/2020-04-28/data/listings.csv.gz
@@ -1469,7 +1479,6 @@ http://data.insideairbnb.com/germany/bv/munich/2019-04-17/data/listings.csv.gz
 http://data.insideairbnb.com/germany/bv/munich/2019-03-15/data/listings.csv.gz
 http://data.insideairbnb.com/italy/campania/naples/2020-09-25/data/listings.csv.gz
 http://data.insideairbnb.com/italy/campania/naples/2020-08-31/data/listings.csv.gz
-http://data.insideairbnb.com/italy/campania/naples/2020-07-20/data/listings.csv.gz
 http://data.insideairbnb.com/italy/campania/naples/2020-06-14/data/listings.csv.gz
 http://data.insideairbnb.com/italy/campania/naples/2020-05-16/data/listings.csv.gz
 http://data.insideairbnb.com/italy/campania/naples/2020-04-30/data/listings.csv.gz
@@ -1792,7 +1801,6 @@ http://data.insideairbnb.com/united-states/ca/pacific-grove/2018-07-31/data/list
 http://data.insideairbnb.com/united-states/ca/pacific-grove/2018-04-22/data/listings.csv.gz
 http://data.insideairbnb.com/france/ile-de-france/paris/2020-09-11/data/listings.csv.gz
 http://data.insideairbnb.com/france/ile-de-france/paris/2020-08-22/data/listings.csv.gz
-http://data.insideairbnb.com/france/ile-de-france/paris/2020-07-16/data/listings.csv.gz
 http://data.insideairbnb.com/france/ile-de-france/paris/2020-06-11/data/listings.csv.gz
 http://data.insideairbnb.com/france/ile-de-france/paris/2020-05-10/data/listings.csv.gz
 http://data.insideairbnb.com/france/ile-de-france/paris/2020-04-15/data/listings.csv.gz
@@ -2597,7 +2605,6 @@ http://data.insideairbnb.com/canada/on/toronto/2016-12-04/data/listings.csv.gz
 http://data.insideairbnb.com/canada/on/toronto/2016-07-05/data/listings.csv.gz
 http://data.insideairbnb.com/canada/on/toronto/2015-09-03/data/listings.csv.gz
 http://data.insideairbnb.com/canada/on/toronto/2015-06-07/data/listings.csv.gz
-http://data.insideairbnb.com/italy/trentino-alto-adige-s%C3%BCdtirol/trentino/2015-10-12/data/listings.csv.gz
 http://data.insideairbnb.com/united-states/mn/twin-cities-msa/2020-07-09/data/listings.csv.gz
 http://data.insideairbnb.com/united-states/mn/twin-cities-msa/2020-06-09/data/listings.csv.gz
 http://data.insideairbnb.com/united-states/mn/twin-cities-msa/2020-05-12/data/listings.csv.gz
@@ -2720,7 +2727,6 @@ http://data.insideairbnb.com/switzerland/vd/vaud/2017-04-18/data/listings.csv.gz
 http://data.insideairbnb.com/switzerland/vd/vaud/2017-03-23/data/listings.csv.gz
 http://data.insideairbnb.com/italy/veneto/venice/2020-09-08/data/listings.csv.gz
 http://data.insideairbnb.com/italy/veneto/venice/2020-08-21/data/listings.csv.gz
-http://data.insideairbnb.com/italy/veneto/venice/2020-07-17/data/listings.csv.gz
 http://data.insideairbnb.com/italy/veneto/venice/2020-06-12/data/listings.csv.gz
 http://data.insideairbnb.com/italy/veneto/venice/2020-05-11/data/listings.csv.gz
 http://data.insideairbnb.com/italy/veneto/venice/2020-04-29/data/listings.csv.gz
