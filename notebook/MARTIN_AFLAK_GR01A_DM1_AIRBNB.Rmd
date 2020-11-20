@@ -1,0 +1,386 @@
+---
+title: "Airbnb Data Analysis - Analysis 1/2 - DM1"
+author: "Marvin Martin & Aflak Michel Omar (ING5 BDA Gr01A)"
+date: "06/11/2020"
+output: 
+  slidy_presentation:
+    footer: "Analysis 1/2 - Marvin Martin & Aflak Michel Omar"
+
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+setwd("~/Desktop/ING5/Data Analytics/Airbnb Data Analysis - Instructions 1/")
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(data.table)
+library(scales)
+library(glue)
+library(rmarkdown)
+```
+
+
+
+## Introduction 
+### Downloading 
+Airbnb data contains a lot of value.
+A real estate investor is looking forward to using this data in order to take a decision regarding the best option he has in real estate to generate profit on Airbnb from his investment. To work on that project, we downloaded the latest available data at a specific time about the following cities: 
+
+  * Malaga (from 2020-06-30)
+  * Mallorca (from 2020-09-19)
+  * Sevilla (from 2020-06-29)
+
+These datasets can be download here <http://insideairbnb.com/get-the-data.html>.
+
+### Prepocessing 
+
+```{r echo=FALSE, warning=FALSE, include=FALSE}
+cities <- c("malaga", "mallorca", "sevilla")
+data_dates <- c("2020-06-30", "2020-09-19", "2020-06-29")
+
+for(i in 1:length(cities)){
+  city <- cities[i]
+  data_date <- data_dates[i]
+  
+  path_listings <- file.path("./data_raw", city,"listings.csv.gz")
+  path_calendar <- file.path("./data_raw", city,"calendar.csv.gz")
+  
+  listings <- read.csv(gzfile(path_listings))
+  calendar <- read.csv(gzfile(path_calendar))
+                       
+  ## Add Keys: columns city and day date
+  listings$city <- city
+  listings$data_date <- data_date
+  
+  ## Select interesting columns
+  ### Most columns don't contain interesting information
+  columns_listings <- c("city", "data_date", "id", "neighbourhood_cleansed", 
+                        "latitude", "longitude", 
+                        "property_type", "room_type", "accommodates", "bedrooms", 
+                        "beds", "price", "minimum_nights",  "maximum_nights")
+  
+  listings <- listings %>% 
+    select(columns_listings) %>% 
+    arrange(id)
+  
+  # Cleaning calendar dataframe
+  ## arrange by id and date
+  calendar <- calendar %>% 
+    arrange(listing_id, date)
+  
+  ## add day number (starting first day)
+  calendar <- calendar %>%
+    group_by(listing_id) %>%
+    mutate(day_nb = row_number()) %>%
+    ungroup()
+  
+  ## change available column to binary
+  calendar <- calendar %>%
+    mutate(available = ifelse(available=="t", 1, 0))
+  
+  ## clean price column and transform to numeric
+  calendar <- calendar %>%
+    mutate(price = str_replace(price, "\\$", ""),
+           adjusted_price = str_replace(adjusted_price, "\\$", ""))
+  calendar <- calendar %>%
+    mutate(price = str_replace(price, ",", ""),
+           adjusted_price = str_replace(adjusted_price, ",", ""))
+  calendar <- calendar %>%
+    mutate(price = as.numeric(price),
+           adjusted_price = as.numeric(adjusted_price))
+  
+  ## calculate estimated revenue for upcoming day
+  calendar <- calendar %>%
+    mutate(revenue = price*(1-available))
+  
+  ## calculate availability, price, revenue for next 30, 60 days ... for each listing_id
+  calendar <- calendar %>%
+    group_by(listing_id) %>%
+    summarise(availability_30 = sum(available[day_nb<=30], na.rm = TRUE),
+              price_30 = mean(price[day_nb<=30 & available==0], na.rm = TRUE),
+              revenue_30 = sum(revenue[day_nb<=30], na.rm = TRUE),
+    )
+
+  listings_cleansed <- listings %>% left_join(calendar, by = c("id" = "listing_id"))
+  
+  dir.create(file.path("./data_cleansed", city, data_date), recursive = TRUE)
+  
+  write.csv(listings_cleansed, file.path("./data_cleansed", city, data_date,  "listings.csv"))
+}
+
+################################################################################
+
+# Reading cleansed data
+cities <- c("malaga", "mallorca", "sevilla")
+data_dates <- c("2020-06-30", "2020-09-19", "2020-06-29")
+
+# We are only interested in data between min_date and max_date
+min_date <- '2020-05-01'
+max_date <- '2020-11-01'
+
+files_paths <- c()
+
+# Read data in cities between min_date and max_date
+for(city in cities){
+  file_dir <- file.path("./data_cleansed", city)
+  file_subdirs <- list.dirs(file_dir)
+  file_subdirs <- file_subdirs[-1]
+  
+  for(file_subdir in file_subdirs){
+    if(file_subdir < file.path(file_dir, min_date) | file_subdir > file.path(file_dir, max_date)  )
+      file_subdirs = file_subdirs[file_subdirs != file_subdir]
+  }
+  files_paths <- c(files_paths, file_subdirs)
+}
+files_paths <- file.path(files_paths, "listings.csv")
+listings <- 
+  do.call(rbind,
+          lapply(files_paths, read.csv, row.names=1))
+
+## Preprocess
+listings$bedrooms <- ifelse(listings$bedrooms >= 5, "5+", listings$bedrooms)
+
+write.csv(listings, file.path("./data_cleansed",  "global_listings.csv"))
+```
+
+Because these dataset are huge, we made some processing to focus on important information and by the way use a reasonnable amount of data (fit computation and time limitations). We been throw several steps:
+
+  * Load and unzip downloaded files
+  * Add Columns: keys city and day date
+  * Select interesting columns 
+  * Cleaning calendar dataframe
+    + Arrange by id and date
+    + Add day number (starting first day)
+    + Change available column to binary
+    + Clean price column and transform to numeric
+    + Calculate estimated availability, price, revenue for next 30 for each listing_id
+  * Clip between min_date and max_date (2020-05-01 -> 2020-11-01)
+  * Finally concatenate listings and agenda them together into one dataframe
+  * Stored the dataframe in a csv file called `global_listings.csv`. 
+
+We stared with 3 zip files of **56.9 Mo** and processed them to get a single **4.3 Mo** csv file.
+
+## Data Overview
+
+```{r echo=FALSE}
+listings <- read.csv(file.path("./data_cleansed/global_listings.csv"))
+```
+
+Here is the shape of our dataset:\
+`r glue("   # Publications :{nrow(listings)}")`\
+`r glue("   # Features :{ncol(listings)}")`\
+
+Dataset sample:\
+```{r, layout="l-body-outset", echo=FALSE}
+paged_table(head(listings))
+```
+
+
+## Analysis 1: Comparing Cities
+*Comparing Airbnb listings in the three different cities:*
+
+1. Average availability over 30 days per each city.
+```{r echo=FALSE, warning=FALSE}
+mean_availability_30 <- listings %>%
+  group_by(city) %>%
+  summarize(mean=round(mean(availability_30),2), .groups = 'keep')
+
+ggplot(listings, aes(x=availability_30, color=city, fill=city)) + 
+  geom_density(aes(color = city),alpha=0.1, size=1) +
+  scale_x_continuous(limits = c(1, 40)) +
+  geom_vline(data = mean_availability_30, aes(xintercept = mean, color = city), size=1, linetype="dashed") +
+  geom_text(data = mean_availability_30, aes(x=mean, y=0, label=mean, vjust = -0.5, hjust = 0, angle = 90)) +
+  ggtitle("Average availability of over 30 days for each city") + 
+  ylab("Density") +
+  xlab("Availability (Days)")
+```
+
+2. Average revenue of over 30 days per each city.
+```{r echo=FALSE, warning=FALSE}
+mean_revenue_30 <- listings %>%
+  group_by(city) %>%
+  summarize(mean=round(mean(revenue_30),2), .groups = 'keep')
+
+ggplot(listings, aes(x=revenue_30, color=city, fill=city)) + 
+  geom_density(aes(color = city),alpha=0.1, size=1) +
+  scale_x_log10()+
+  geom_vline(data = mean_revenue_30, aes(xintercept = mean, color = city),size=1, linetype="dashed") +
+  geom_text(data = mean_revenue_30, aes(x=mean, y=0, label=mean, vjust = -0.5, hjust = 0, angle = 90)) +
+  ggtitle("Average revenue of over 30 days for each city") + 
+  ylab("Density") +
+  xlab("Revenue (€)")
+```
+
+3. Distribution of estimated availability for the next 30 days per each city.
+```{r echo=FALSE, warning=FALSE}
+ggplot(listings, aes(city, availability_30)) + 
+  geom_boxplot(aes(colour = city)) +
+  ggtitle("Distribution of estimated availability for the next 30 days for each city") + 
+  ylab("Availability (Days)") + 
+  theme(legend.position="bottom", axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+```
+
+4. Distribution of estimated revenue for the next 30 days per each city.
+```{r echo=FALSE, warning=FALSE}
+ggplot(listings, aes(city, revenue_30)) + 
+  geom_boxplot(aes(colour = city)) + 
+  scale_y_continuous(limits = quantile(listings$revenue_30, c(0, 0.9), na.rm = TRUE)) +
+  ggtitle("Distribution of estimated revenue for the next 30 days for each city") + 
+  ylab("Revenue (€)") +
+  theme(legend.position="bottom", axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank())
+```
+
+5. Distribution of estimated revenue for the next 30 days each city & for each house size (# of bedrooms).
+```{r echo=FALSE, warning=FALSE}
+ggplot(listings %>% filter(!is.na(bedrooms)), aes(city, revenue_30)) + 
+  geom_boxplot(aes(colour = bedrooms)) + 
+  scale_y_continuous(limits = quantile(listings$revenue_30, c(0.1, 0.9), na.rm = TRUE)) +
+  ggtitle("Distribution of estimated revenue for the next 30 days for each city") + 
+  xlab("City") + 
+  ylab("Revenue (€)")
+```
+
+6. Distribution of estimated revenue for the next 30 days per each city & for each room type (room_type).
+```{r echo=FALSE, warning=FALSE}
+ggplot(listings %>% filter(!is.na(room_type)), aes(city, revenue_30)) + 
+  geom_boxplot(aes(colour = room_type), na.rm = TRUE) + 
+  scale_y_continuous(limits = quantile(listings$revenue_30, c(0.1, 0.9), na.rm = TRUE)) +
+  ggtitle("Distribution of estimated revenue for the next 30 days for each city") + 
+  xlab("City") + 
+  ylab("Revenue (€)")
+```
+
+
+## Analysis 2: Deep Dive in one City
+*For each city, you can perform a finer grained analysis to answer the following questions:*
+
+1. Proportion of each room type.
+```{r echo=FALSE}
+for (val in unique(listings$city)) {
+  print(
+    ggplot(filter(listings, city == val), aes(x=room_type)) + 
+      geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge", fill="darkgreen") + 
+      geom_text(aes(label = percent(round((..count..)/sum(..count..),2)), y= ((..count..)/sum(..count..))), stat="count", vjust = -.25) +
+      scale_y_continuous(labels =  percent_format()) +
+      ggtitle(glue("Proportion of each room type in {val}")) + 
+      xlab("Room type") + 
+      ylab("Pourcentage")
+  )
+}
+```
+
+2. Proportion of each house size (# of bedroom).
+```{r echo=FALSE}
+
+for (val in unique(listings$city)) {
+  print(
+    ggplot(filter(listings, city == val)  %>% filter(!is.na(bedrooms)) , aes(x=bedrooms)) + 
+      geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge", fill="steelblue") + 
+      geom_text(aes(label = percent(round((..count..)/sum(..count..),2)), y= ((..count..)/sum(..count..))), stat="count", vjust = -.25) +
+      ggtitle(glue("Proportion of each house size (# of bedroom) in {val}")) + 
+      xlab("# of bedroom") + 
+      ylab("Pourcentage")
+  )
+}
+
+```
+3. Proportion of each neighborhood.
+```{r echo=FALSE}
+for (val in unique(listings$city)) {
+  top <- 20
+
+  listings_top <- within(filter(listings, city == val), 
+                                      neighbourhood_cleansed <- factor(neighbourhood_cleansed, 
+                                                                      levels=tail(
+                                                                        names(sort(table(neighbourhood_cleansed),decreasing=F))
+                                                                        , top)
+                                                                        )) %>% filter(!is.na(neighbourhood_cleansed))
+
+  print(
+    ggplot(listings_top, aes(x=neighbourhood_cleansed)) + 
+      geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge") +
+      coord_flip() + 
+      scale_y_continuous(labels = percent_format()) + 
+      theme(axis.text.y = element_text(size=4)) +
+      ggtitle(glue("Proportion of each neighborhood in {val} (only top {top})")) + 
+      xlab("Neighborhoods") + 
+      ylab("Pourcentage")
+  )
+}
+```
+4. Distribution (density) and average availability (vline) over the next 30 days for each room type / house size / neighborhood.
+```{r echo=FALSE}
+for (val in unique(listings$city)) {
+  
+  for (criteria in c(as.name("room_type"), as.name("bedrooms"), as.name("neighbourhood_cleansed"))){
+    
+    if (criteria == as.name("neighbourhood_cleansed")){
+      top <- 5
+      final_listings <- within(filter(listings, city == val), 
+                                      neighbourhood_cleansed <- factor(neighbourhood_cleansed, 
+                                                                      levels=tail(names(sort(table(neighbourhood_cleansed),decreasing=FALSE)), top))) %>%                                                                                    filter(!is.na(neighbourhood_cleansed))
+      
+    }
+    else{
+      final_listings <- listings %>% filter(!is.na(bedrooms))
+    }
+    
+    mean_availability_30 <- final_listings %>%
+      filter(city == val) %>%
+      group_by({{ criteria }}) %>%
+      summarize(mean=round(mean(availability_30), 2), .groups = 'keep')
+      
+    print(
+      ggplot(filter(final_listings, city == val), aes(x=availability_30)) + 
+      geom_density(aes(color = {{ criteria }}),alpha=0.1, size=1) +
+      scale_x_continuous(limits = c(1, 40)) +
+      geom_vline(data = mean_availability_30, aes(xintercept = mean, color = {{ criteria }}), size=0.9, linetype="dashed", show_guide = TRUE) +
+      scale_fill_manual(name = "", values=c('red','blue'), labels = c("Premium", "Ideal")) +
+      labs(title = glue("Distribution of availability of over 30 days for each {criteria} in {val}"), subtitle = "Averages are the vertical dashed lines") +
+      ylab("Density") + 
+      xlab("Availability (Days)")
+    )
+  }
+}
+```
+5. Distribution (density) and average (vline) revenue over the next 30 days for each room type / house size / neighborhood.
+```{r echo=FALSE}
+for (val in unique(listings$city)) {
+  
+  for (criteria in c(as.name("room_type"), as.name("bedrooms"), as.name("neighbourhood_cleansed"))){
+  
+    if (criteria == as.name("neighbourhood_cleansed")){
+      top <- 5
+      final_listings <- within(filter(listings, city == val), 
+                                      neighbourhood_cleansed <- factor(neighbourhood_cleansed, 
+                                                                      levels=tail(names(sort(table(neighbourhood_cleansed),decreasing=FALSE)), top))) %>% 
+                                                                                filter(!is.na(neighbourhood_cleansed))
+      
+    }
+    else{
+      final_listings <- listings %>% filter(!is.na(bedrooms))
+    }
+    
+    mean_revenue_30 <- final_listings %>%
+      filter(city == val) %>%
+      group_by({{ criteria }}) %>%
+      summarize(mean=round(mean(revenue_30), 2), .groups = 'keep')
+    
+
+    caption <- paste(mean_revenue_30)
+      
+    print(
+      ggplot(filter(final_listings, city == val), aes(x=revenue_30)) + 
+      geom_density(aes(color = {{ criteria }}), alpha=0.1, size=1) +
+      scale_x_log10()+
+      geom_vline(data = mean_revenue_30, aes(xintercept = mean, color = {{ criteria }}), size=0.9, linetype="dashed") +
+      labs(title = glue("Distribution of revenue of over 30 days for each {criteria} in {val}"), subtitle = "Averages are the vertical dashed lines") +
+      ylab("Density") + 
+      xlab("Revenue (€)")
+    )  
+  }
+}
+```
+
+
