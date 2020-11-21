@@ -14,7 +14,7 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       selectInput("country", 
-                  h3("Select country:"), 
+                  h3("Select a country:"), 
                   choices = list("France" = "france", 
                                  "Netherlands" = "the-netherlands",
                                  "Spain"= "spain",
@@ -27,7 +27,7 @@ ui <- fluidPage(
       uiOutput("checkbox"),
     
       selectInput("metric", 
-                  h3("Average metric:"), 
+                  h3("Select a feature:"), 
                   choices = list("Revenue (30 days)" = "revenue_30", 
                                  "Availability (30 days)" = "availability_30",
                                  "Price (30 days)" = "price_30",
@@ -38,10 +38,8 @@ ui <- fluidPage(
                   selected = "revenue_30")
     ),
     mainPanel(
-      conditionalPanel(
-        condition = "input.city",
-        htmlOutput("mean")
-      )
+      htmlOutput("mean"),
+      plotOutput("distribution")
     )
   )
 )
