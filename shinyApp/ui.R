@@ -26,7 +26,7 @@ ui <- fluidPage(
       
       uiOutput("checkbox"),
     
-      selectInput("metric", 
+      selectInput("feature_1", 
                   h3("Select a feature:"), 
                   choices = list("Revenue (30 days)" = "revenue_30", 
                                  "Availability (30 days)" = "availability_30",
@@ -35,11 +35,19 @@ ui <- fluidPage(
                                  "Maximum Nights" = "maximum_nights",
                                  "Review Scores Rating" = "review_scores_rating"
                   ),
-                  selected = "revenue_30")
+                  selected = "revenue_30"),
+      
+      selectInput("feature_2", 
+                  h3("Select another feature:"), 
+                  choices = list("Room type" = "room_type", 
+                                 "Number of Bedrooms" = "bedrooms"
+                                ),
+                  selected = NULL)
     ),
     mainPanel(
-      htmlOutput("mean"),
-      plotOutput("distribution")
+      htmlOutput("mean_feature_1"),
+      plotOutput("distribution"),
+      plotOutput("distribution_multiple_features")
     )
   )
 )
