@@ -129,26 +129,27 @@ download_data <- function(df, countries, last_n_dates) {
 
 # Merge all cities csv into one dataframe
 load_global_listings <- function(){
-  files  <- list.files(file.path("./data/cities/"), pattern = '\\.csv')
-  tables <- lapply(file.path("./data/cities/",files), read.csv, header = TRUE)
+  files  <- list.files(file.path("../data/cities/"), pattern = '\\.csv')
+  tables <- lapply(file.path("../data/cities/",files), read.csv, header = TRUE)
   final_df <- do.call(rbind , tables)
   final_df$X <- NULL
-  write.csv(final_df, file.path("./data/",  "global_listings.csv"), row.names=FALSE)
+  #write.csv(final_df, file.path("./data/",  "global_listings.csv"), row.names=FALSE)
+  return(final_df)
 }
 
 
 ############################ Function usage ####################################
 
 # Extract important data from url
-urls <- read.csv(file.path("./data/all_data_urls.csv"))
-df <- extract_all_meta(urls)
+#urls <- read.csv(file.path("./data/all_data_urls.csv"))
+#df <- extract_all_meta(urls)
 
 # Download data for list a countries
-countries <- c("france", "spain", "the-netherlands", "germany", "belgium","italy") #
-download_data(df, countries, 3)
+#countries <- c("france", "spain", "the-netherlands", "germany", "belgium","italy") #
+#download_data(df, countries, 3)
 
 # Get Final preprocess dataset
-load_global_listings()
+#df <- load_global_listings()
 
 ############################ End ###############################################
 

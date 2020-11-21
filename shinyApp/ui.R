@@ -7,21 +7,41 @@ library(scales)
 library(glue)
 library(rmarkdown)
 
-
 ui <- fluidPage(
-  titlePanel("Airbnb Analysis"),
+  
+  titlePanel("Analysis 1 – Comparing cities"),
+  
   sidebarLayout(
     sidebarPanel(
-      checkboxGroupInput("var", 
-                         h3("Select cities:"), 
-                         choices = list("Malaga" = "malaga", 
-                                        "Mallorca" = "mallorca", 
-                                        "Sevilla" = "sevilla"),
-                         selected = "malaga")
-      ),
+      selectInput("country", 
+                  h3("Select country:"), 
+                  choices = list("France" = "france", 
+                                 "Netherlands" = "the-netherlands",
+                                 "Spain"= "spain",
+                                 "Italy"= "italy",
+                                 "Germany"= "germany",
+                                 "Belgium"= "belgium"
+                                 ),
+                  selected = "france"),
+      
+      uiOutput("checkbox"),
     
+      selectInput("metric", 
+                  h3("Average metric:"), 
+                  choices = list("Revenue (30 days)" = "revenue_30", 
+                                 "Availability (30 days)" = "availability_30",
+                                 "Price (30 days)" = "price_30",
+                                 "Minimum Nights" = "minimum_nights",
+                                 "Maximum Nights" = "maximum_nights",
+                                 "Review Scores Rating" = "review_scores_rating"
+                  ),
+                  selected = "revenue_30")
+    ),
     mainPanel(
-      plotOutput("draw")
+      conditionalPanel(
+        condition = "input.city",
+        htmlOutput("mean")
+      )
     )
   )
 )
