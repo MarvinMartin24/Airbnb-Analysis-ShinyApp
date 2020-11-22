@@ -47,7 +47,8 @@ ui <- fluidPage(
     mainPanel(
       htmlOutput("mean_feature_1"),
       plotOutput("distribution"),
-      plotOutput("distribution_multiple_features")
+      plotOutput("distribution_multiple_features"),
+      htmlOutput("map"),
     )
   )
 )

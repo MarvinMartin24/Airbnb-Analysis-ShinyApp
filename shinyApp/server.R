@@ -4,13 +4,14 @@ library(stringr)
 source("../utils/tools.R")
 
 print("Start downloading...")
-listings <- load_global_listings()
+listings <- load_global_listings() %>%
+  mutate(latitudelongitude = str_c(latitude,":",longitude))
 print("Done !")
 
 server <- function(input, output) {
   
   listings_country <- reactive({
-    out <- listings %>% 
+    listings %>% 
       filter(country == input$country)
   })
   
@@ -19,9 +20,9 @@ server <- function(input, output) {
     if (is.null(input$city)){
       return(NULL)
     }
-    
+
     listings_country() %>% 
-      filter(city == input$city)
+      filter(city %in% input$city) 
   })
   
   listings_city_multiple_features <- reactive({
@@ -106,6 +107,24 @@ server <- function(input, output) {
       xlab("City") + 
       ylab(glue("{str_replace(input$feature_1,'_', ' ')}"))
   })
+  
+  output$map <- renderGvis({
+    
+    if (is.null(listings_city()))
+      return(NULL)
+    
+    #print(unique(listings_city()$city))
+    #View(listings_city())
+    
+
+    gvisMap(listings_city(), locationvar="latitudelongitude" , tipvar="price_30", 
+            options=list(showTip=TRUE, 
+                         showLine=TRUE, 
+                         enableScrollWheel=TRUE,
+                         mapType='terrain', 
+                         useMapTypeControl=TRUE))
+  })
+  
   
 }
 
