@@ -39,6 +39,13 @@ server <- function(input, output) {
     choice <- unique(listings_country()$city)
     checkboxGroupInput("city", "Select Cities:", choices = choice, selected = NULL)
   })
+  
+  output$slider_feature_1 <- renderUI({ 
+    choice <- unique(listings_country()$city)
+    sliderInput("range_feature_1", 
+                label = "Range of interest:",
+                min = 0, max = 100, value = c(0, 100))
+  })
 
   output$mean_feature_1 <- renderGvis({
     

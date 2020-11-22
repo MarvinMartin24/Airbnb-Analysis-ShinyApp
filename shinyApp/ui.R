@@ -37,6 +37,8 @@ ui <- fluidPage(
                   ),
                   selected = "revenue_30"),
       
+      uiOutput("slider_feature_1"),
+      
       selectInput("feature_2", 
                   h3("Select another feature:"), 
                   choices = list("Room type" = "room_type", 
