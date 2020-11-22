@@ -112,12 +112,8 @@ server <- function(input, output) {
     
     if (is.null(listings_city()))
       return(NULL)
-    
-    #print(unique(listings_city()$city))
-    #View(listings_city())
-    
 
-    gvisMap(listings_city(), locationvar="latitudelongitude" , tipvar="price_30", 
+    gvisMap(listings_city(), locationvar="latitudelongitude" , tipvar=input$feature_1, 
             options=list(showTip=TRUE, 
                          showLine=TRUE, 
                          enableScrollWheel=TRUE,
