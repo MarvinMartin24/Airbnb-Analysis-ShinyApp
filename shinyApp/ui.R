@@ -43,6 +43,9 @@ ui <- fluidPage(
                                             "Number of Bedrooms" = "bedrooms"
                              ),
                              selected = NULL),
+                 
+                 
+                 uiOutput("date_slider")
                ),
                mainPanel(
                  htmlOutput("mean_feature_1"),
