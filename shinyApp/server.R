@@ -57,7 +57,6 @@ server <- function(input, output) {
   
   # -------------------------- UI -----------------------------
   
-  
   output$select_city_tab1 <- renderUI({ 
     choice <- unique(listings_country()$city)
     checkboxGroupInput("city_tab1", "Select Cities:", choices = choice, selected = NULL)
