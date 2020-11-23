@@ -77,6 +77,9 @@ ui <- fluidPage(
                ),
                mainPanel(
                  htmlOutput("map"),
+                 plotOutput("plot_room_type"),
+                 plotOutput("plot_house_size"),
+                 plotOutput("plot_neighborhood")
                ),
              )
              )

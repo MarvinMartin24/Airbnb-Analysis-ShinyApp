@@ -223,5 +223,72 @@ server <- function(input, output) {
                          useMapTypeControl=TRUE))
   })
   
+  
+  ### proportion of each room type
+  output$plot_room_type <- renderPlot({
+    if (is.null(listings_city_tab2_feature())){
+      return(NULL)
+    }
+
+    for (val in unique(listings_city_tab2_feature()$city)) {
+      print(
+        ggplot(filter(listings_city_tab2_feature(), city == val), aes(x=room_type)) + 
+          geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge", fill="darkgreen") + 
+          geom_text(aes(label = percent(round((..count..)/sum(..count..),2)), y= ((..count..)/sum(..count..))), stat="count", vjust = -.25) +
+          scale_y_continuous(labels =  percent_format()) +
+          ggtitle(glue("Proportion of each room type in {val}")) + 
+          xlab("Room type") + 
+          ylab("Pourcentage")
+      )
+    }
+  })
+  
+  
+  ### proportion of each house size
+  output$plot_house_size <- renderPlot({
+    if (is.null(listings_city_tab2_feature())){
+      return(NULL)
+    }
+  
+    for (val in unique(listings_city_tab2_feature()$city)) {
+      print(
+        ggplot(filter(listings_city_tab2_feature(), city == val)  %>% filter(!is.na(bedrooms)) , aes(x=bedrooms)) + 
+          geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge", fill="steelblue") + 
+          geom_text(aes(label = percent(round((..count..)/sum(..count..),2)), y= ((..count..)/sum(..count..))), stat="count", vjust = -.25) +
+          ggtitle(glue("Proportion of each house size (# of bedroom) in {val}")) + 
+          xlab("# of bedroom") + 
+          ylab("Pourcentage")
+      )
+    }
+  })
+  
+  ### proportion of each neighborhood
+  output$plot_neighborhood <- renderPlot({
+    if (is.null(listings_city_tab2_feature())){
+      return(NULL)
+    }
+  
+    for (val in unique(listings_city_tab2_feature()$city)) {
+      top <- 20
+      
+      listings_top <- within(filter(listings_city_tab2_feature(), city == val), 
+                             neighbourhood_cleansed <- factor(neighbourhood_cleansed, 
+                                                              levels=tail(
+                                                                names(sort(table(neighbourhood_cleansed),decreasing=F))
+                                                                , top)
+                             )) %>% filter(!is.na(neighbourhood_cleansed))
+      
+      print(
+        ggplot(listings_top, aes(x=neighbourhood_cleansed)) + 
+          geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge") +
+          coord_flip() + 
+          scale_y_continuous(labels = percent_format()) + 
+          theme(axis.text.y = element_text(size=4)) +
+          ggtitle(glue("Proportion of each neighborhood in {val} (only top {top})")) + 
+          xlab("Neighborhoods") + 
+          ylab("Pourcentage")
+      )
+    }
+  })
 }
 

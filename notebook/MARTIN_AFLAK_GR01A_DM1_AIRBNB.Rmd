@@ -10,7 +10,7 @@ output:
 
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
-setwd("~/Desktop/ING5/Data Analytics/Airbnb Data Analysis - Instructions 1/")
+setwd("./")
 library(dplyr)
 library(stringr)
 library(ggplot2)
