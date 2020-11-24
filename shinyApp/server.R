@@ -263,6 +263,7 @@ server <- function(input, output) {
   })
   
   output$map <- renderGvis({
+    
     Sys.sleep(0.2)
     if (is.null(listings_city_tab2_feature())){
       return(NULL)
