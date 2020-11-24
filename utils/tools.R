@@ -133,6 +133,8 @@ load_global_listings <- function(){
   tables <- lapply(file.path("../data/cities/",files), read.csv, header = TRUE)
   final_df <- do.call(rbind , tables)
   final_df$X <- NULL
+  final_df <- final_df %>%
+    mutate(latitudelongitude = str_c(latitude,":",longitude))
   #write.csv(final_df, file.path("./data/",  "global_listings.csv"), row.names=FALSE)
   return(final_df)
 }
