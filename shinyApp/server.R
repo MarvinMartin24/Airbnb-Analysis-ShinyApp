@@ -223,5 +223,31 @@ server <- function(input, output) {
                          useMapTypeControl=TRUE))
   })
   
+  
+  ### proportion of each room type
+  output$plot_proportion <- renderPlot({
+    if (is.null(listings_city_tab2_feature())){
+      return(NULL)
+    }
+    
+    if (is.null(input$feature_proportion_tab2)) {
+      return(NULL)
+    }
+    
+    top <- 20
+    feature <- input$feature_proportion_tab2
+    df <- listings_city_tab2_feature()[feature]
+    listings_top <- top_n(as.data.frame(sort(table(df), decreasing=T)), top)
+    names(listings_top) <- c(feature, 'freq')
+    
+    listings_top['freq'] <- listings_top['freq'] / sum(listings_top['freq'])
+    
+    ggplot(listings_top, aes_string(x=feature, y='freq')) +
+      geom_bar(stat='identity') +
+      ggtitle(glue("Proportion of each room type")) +
+      coord_flip() +
+      xlab(feature) +
+      ylab("Pourcentage")
+  })
 }
 

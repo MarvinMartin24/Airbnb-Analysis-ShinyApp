@@ -72,11 +72,21 @@ ui <- fluidPage(
                              selected = "revenue_30"),
                  
                  uiOutput("min_feature_1_tab2"),
-                 uiOutput("max_feature_1_tab2")
+                 uiOutput("max_feature_1_tab2"),
+                 
+                 selectInput("feature_proportion_tab2", 
+                             h3("Select a plot feature:"), 
+                             choices = list("Room type" = "room_type", 
+                                            "Number of bedrooms" = "bedrooms",
+                                            "Neighbourhood" = "neighbourhood_cleansed"
+                                            
+                             ),
+                             selected = "room_type"),
                  
                ),
                mainPanel(
                  htmlOutput("map"),
+                 plotOutput("plot_proportion")
                ),
              )
              )

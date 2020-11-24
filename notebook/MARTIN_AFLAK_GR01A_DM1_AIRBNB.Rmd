@@ -10,7 +10,7 @@ output:
 
 ```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
-setwd("~/Desktop/ING5/Data Analytics/Airbnb Data Analysis - Instructions 1/")
+setwd("./")
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -296,7 +296,6 @@ for (val in unique(listings$city)) {
                                                                         names(sort(table(neighbourhood_cleansed),decreasing=F))
                                                                         , top)
                                                                         )) %>% filter(!is.na(neighbourhood_cleansed))
-
   print(
     ggplot(listings_top, aes(x=neighbourhood_cleansed)) + 
       geom_bar(aes(y = (..count..)/sum(..count..)), position="dodge") +
