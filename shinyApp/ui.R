@@ -1,9 +1,9 @@
 library(shiny)
+library(googleVis)
 library(dplyr)
 library(stringr)
 library(ggplot2)
 library(data.table)
-library(scales)
 library(glue)
 library(rmarkdown)
 

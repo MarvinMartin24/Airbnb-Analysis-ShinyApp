@@ -1,6 +1,10 @@
 library(shiny)
 library(googleVis)
 library(stringr)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(glue)
 source("../utils/tools.R")
 
 print("Start downloading...")
@@ -85,7 +89,6 @@ server <- function(input, output) {
   })
   
   output$distribution <- renderPlot({
-    Sys.sleep(0.2)
     if (is.null(listings_city_selected()))
       return(NULL)
     
@@ -99,7 +102,6 @@ server <- function(input, output) {
   })
   
   output$distribution_multiple_features <- renderPlot({
-    Sys.sleep(0.2)
     if (is.null(listings_city_multiple_features()))
       return(NULL)
     
@@ -185,7 +187,6 @@ server <- function(input, output) {
   # -------------------------- Plots -----------------------------
   
   output$plot_proportion <- renderGvis({
-    Sys.sleep(0.2)
     if (is.null(listings_city_tab2_feature()) | is.null(input$feature2_tab2)){
       return(NULL)
     }
@@ -207,7 +208,6 @@ server <- function(input, output) {
   })
   
   output$mean_feature_1_tab2 <- renderGvis({
-    Sys.sleep(0.2)
     if (is.null(listings_city_selected_tab2()))
       return(NULL)
     
@@ -231,7 +231,6 @@ server <- function(input, output) {
   })
   
   output$distribution_multiple_features_tab2 <- renderPlot({
-    Sys.sleep(0.2)
     if (is.null(listings_city_selected_tab2()))
       return(NULL)
     

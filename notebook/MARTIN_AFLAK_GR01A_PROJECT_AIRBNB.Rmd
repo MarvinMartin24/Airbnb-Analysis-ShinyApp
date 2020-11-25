@@ -1,0 +1,197 @@
+---
+title: "Airbnb Data Analytics Project - Shiny App"
+author: "Marvin Martin & Aflak Michel Omar (ING5 BDA Gr01A)"
+date: "26/11/2020"
+output: 
+  slidy_presentation:
+    font_adjustment: -1
+    footer: "ECE Project - Marvin Martin & Aflak Michel Omar"
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(data.table)
+library(glue)
+library(googleVis)
+library(rmarkdown)
+library(png)
+library(grid)
+source("../utils/tools.R")
+```
+
+## Introduction {.smaller}
+### Data Extraction {.smaller}
+Airbnb daily data is very valuable. An investor is eager to use this data to make key decisions about the best real estate option available to generate benefit. In this project, we will use scrapped data from 6 countries aggregated over a period of time (For each city of these countries we kept the 3 latest dates collected):
+
+  - France (from 2020-06-11 to 2020-09-19) 
+  - Netherlands (from 2020-07-09 to 2020-09-09)
+  - Spain (from 2020-04-30 to 2020-09-19)
+  - Italy (from 2020-04-28 to 2020-09-25)
+  - Germany (from 2020-04-25 to 2020-08-30)
+  - Belgium (from 2020-04-19 to 2020-06-22)
+
+These datasets can be download on this website <http://insideairbnb.com/get-the-data.html>. A csv documents is available in `data\all_data_urls.csv` where all the scrapped urls are available and ready to download .
+
+### Prepocessing overview {.smaller}
+Because these dataset are huge, we made some processing to focus on important information and by the way use a reasonable amount of data (fit computation and time limitations). We been throw several steps:
+
+```{r eval=FALSE}
+################### Code From utils/tools.R ##################################
+urls <- read.csv(file.path("./data/all_data_urls.csv")) # Step 1 
+df <- extract_all_meta(urls) # Step 2 
+lastest_dates <- 3 # Step 3
+countries <- c("france", "spain", "the-netherlands", "germany", "belgium","italy") # Step 4
+download_data(df, countries, lastest_dates) # Step 5
+```
+```{r echo=TRUE}
+listings <- load_global_listings() # Step 6
+```
+We reduce the data size from several Gb to only hundred of Mo. We are now ready to play with it!
+
+## Prepocessing Steps {.smaller}
+
+Starting with raw data, we been throw several steps:\
+
+[Step 1]  Load csv data with urls and meta provided (read.csv) \
+[Step 2]  Extract "country", "region", "city", "date" and "url" from the csv in a dataframe (extract_all_meta) \
+[Step 3]  Specify the number "n" of latest scrapping date you are looking for. \
+[Step 4]  Select a list of 6 countries, on which you want to work on. \
+[Step 5]  Go through this dataframe, line by line and do the following steps (download_data and prepare_data) : \
+  
+  * For each country of the list:
+    + Filter the dataframe (from extract_all_meta) to get the country
+    + Order then by date and keep the n most recent scrapped dates
+    + For each remaining rows (one city per line) download both calendar and listings, add the metadata to both, send it to prepare_data.
+      - Prepare_data is pretty much the same script as the teacher (with more columns kept)
+      - Select interesting columns (listed in previous slides)
+      - Cleaning calendar dataframe by:
+      - Arrange by id and date
+      - Add day number
+      - Change available column to binary
+      - Clean price column and transform to numeric
+      - Calculate estimated availability, price, revenue for next 30 for each listing_id
+      - Finally concatenate listings and agenda them together into one dataframe
+      - Stored the dataframe in a csv file called `/data/countries/listings_CITY_NAME_date.csv`. 
+  
+[Step 5 - Remarque] This big step results in a csv file for every cities of the countries listed. \
+We could have avoid writing files, but as long as this step takes more thanks 10 minutes, we preferred to keep then in our memory. \
+
+[Step 6] Get Final preprocess dataset by merging all the cities csv into a single data frame (load_global_listings). \
+This step is used at the beginning of the server and takes around 20 seconds. \
+
+## Data Overview {.smaller}
+*Dataset sample:*\
+```{r, layout="l-body-outset", echo=FALSE}
+paged_table(sample_n(listings, 5))
+```
+*Here is the shape of our dataset:*\
+`r glue("   # Publications :{nrow(listings)}")`\
+`r glue("   # Features :{ncol(listings)}")`\
+
+*Features names are:*\
+```{r, echo=FALSE}
+cat(paste('-', names(listings)), sep = '\n')
+```
+
+## Shiny App: Tab1 - Analysis by comparing several cities {.smaller}
+![Tab 1 - Analysis by comparing several cities](../data/screenshots/tab1.png){width=850px, height=550px}
+
+## Shiny App: Tab2  - Analysis only one city {.smaller}
+![Tab 2 - Analysis only one city](../data/screenshots/tab2.png){width=850px, height=550px}
+
+## Shiny App: Structure and code overview {.smaller}
+### Libraries {.smaller}
+We use several libraries (webapp, graphical, data manipulations) to build this project:\
+shiny, googleVis, ggplot2, dplyr, data.table, stringr and glue
+
+### UI  {.smaller}
+```{r eval=FALSE}
+################### Code From shinyApp/ui.R ##################################
+# IT IS SPEUDO CODE !!!
+fluidPage
+  tabsetPanel
+    tabPanel # Analysis 1 Tab
+      sidebarLayout
+        sidebarPanel # Tool Bar
+          Checkbox, selectInput, uiOutput, ...
+        mainPanel # Plots
+          htmlOutput, plotOutput ...
+    tabPanel # Analysis 2 Tab
+      sidebarLayout
+        sidebarPanel # Tool Bar
+          Checkbox, selectInput, uiOutput, ...
+        mainPanel # Plots
+          htmlOutput, plotOutput ...
+```
+
+### Server {.smaller}
+```{r eval=FALSE}
+################### Code From shinyApp/server.R ##################################
+# IT IS SPEUDO CODE !!!
+listings <- load_global_listings() # Download data
+# Server
+server
+  # Tab 1 variables
+  reactive # Reactive DataFrame (filter by country / cities / features)
+  renderUI  # ui send from server to uiOutput (checkbox, selectInput, dateSlider)
+  renderGvis, renderPlot # Plots send to ui send from server to htmlOutput,plotOutput (histogram,...)
+  # Tab 2 variables
+  reactive # Reactive DataFrame (filter one city)
+  renderUI  # ui send from server to uiOutput (checkbox, selectInput, dateSlider)
+  renderGvis, renderPlot # Plots  send to ui from server to htmlOutput,plotOutput (map,...)
+```
+
+## App Usage: Analysis 1 Comparing Cities {.smaller}
+Each tab is splited into to vertical part: Tool Bar and Plots
+
+###  Tool Bar
+You can:
+
+ * Select a Country (France, Netherlands, Spain, Italy, Germany or Belgium) (will be kept in tab2).
+ * Select several Cities to compared (initial none are selected so no plots are displayed).
+ * Select a range of date (it is not continues as far as we have 3 scrapping dates).
+ * Select a numerical Feature (1) (Revenue, Availability, Price, Minimum Night, Maximum Nights, Review Scores Rating).
+ * Select a categorical Feature (2) (Room type, Number of bedrooms).
+ 
+### Plots
+
+ * First plot is a histogram displaying the average over the feature 1 selected for each city selected.
+ * Second plot is a Density plot on the feature 1 selected for each city selected.
+ * Last plot is a Boxplot on the feature 1 selected for each city and feature 2 selected.
+
+## App Usage: Analysis 2  Deep Dive in one City {.smaller}
+
+###  Tool Bar
+You can:
+
+ * Select only one city (from the country selected in tab1).
+ * Select a range of date (can be different from tab1).
+ * Select a numerical Feature (1) (Revenue, Availability, Price, Minimum Night, Maximum Nights, Review Scores Rating).
+ * Select a categorical Feature (2) (Room type, Number of bedrooms, Neighbourhood).
+ * Select Map filters (Minimum value of feature 1, Maximun value of feature 1 and the Number of geopoints to display).
+ 
+### Plots
+
+ * First two plots is a histograms displaying:
+  - The Proportion over the feature 2.
+  - The Average value of feature 1 for each feature 2 categories.
+ * Second plot is a Density plot and average line on the feature 1 for each feature 2 categories.
+ * Last plot is a Google Map specifying the feature 1 value for each geopoints based on the map filters selected.
+
+## Let's try this in our Shiny App {.smaller}
+
+```{r eval=FALSE}
+
+library(shiny) # You might need to install more packages (ggplot, gvis, ...)
+
+setwd("~/YOUR_PATH/Airbnb-Analysis-ShinyApp")
+runApp(appDir = "shinyApp")
+
+#or 
+setwd("~/YOUR_PATH/Airbnb-Analysis-ShinyApp")
+runGitHub("Airbnb-Analysis-ShinyApp", "MarvinMartin24", subdir = "shinyApp")
+```
