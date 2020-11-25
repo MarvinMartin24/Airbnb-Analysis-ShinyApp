@@ -1,6 +1,9 @@
 # Airbnb-Analysis-ShinyApp
+
 R project for ECE Course DATA ANALYTICS WITH R 2020.
+
 This project aims to build a shiny web app that provide garph and insights from scrapped airbnb data.
+
 MARTIN MARVIN - MICHEL OMAR AFLAK
 
 
@@ -40,6 +43,8 @@ Several features are selectable:
   * feature 1 (numerical data like revenue, price, availability, ...)
   * feature 2 (categorical data like room type, number of bedrooms, neigboorhood, ...)
   * Map filter (min max of feature 1 and number of geopoints to display in the map
+  
+A R notebook in Markdown is available in `notebook` to pitch our project
 
 # Contribution
 MARTIN MARVIN.
