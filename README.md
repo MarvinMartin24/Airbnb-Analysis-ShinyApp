@@ -42,4 +42,6 @@ Several features are selectable:
   * Map filter (min max of feature 1 and number of geopoints to display in the map
 
 # Contribution
+MARTIN MARVIN
+MICHEL OMAR AFLAK
 Thank you Maggie MHANNA, our teacher for supervising this project.
