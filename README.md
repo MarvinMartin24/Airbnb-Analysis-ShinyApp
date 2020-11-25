@@ -27,7 +27,7 @@ http://127.0.0.1:5640
 
 It contains two tabs, one tab for analysis 1 that compares different cities with each other. Tab
 2 that contains analysis 2 which deep dives into a selected city.
-Data have been scrapped from the 3 latest scrapping date for each city at [Insideairbnb!]http://insideairbnb.com/get-the-data.html.
+Data have been scrapped from the 3 latest scrapping date for each city at http://insideairbnb.com/get-the-data.html.
 Have a lot at `data\all_data_urls.csv` where all the urls are stored.
 We have applied preprocessing step to only be usefull information and computed some additional one, please look at `utils\tools.R`
 The shiny app code is located in `shinyApp` where you can find the front-end (`ui.R`) and back-end (`server.R`).
